@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { ApiError } from "../util/apiError";
+import { ApiError } from "../util/apiError.js";
 import { requestHandeller } from "../util/requestHandeller.js";
 import { User } from "../models/user.model.js";
 
@@ -12,8 +12,9 @@ export const verifyToken = requestHandeller(async (req, res, next) => {
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-    const user = User.findById(decodedToken?._id).select("-password -__v");
-
+    const user = await User.findById(decodedToken?._id).select(
+      "-password -__v"
+    );
     if (!user) {
       throw new ApiError(401, "Invalid Token");
     }

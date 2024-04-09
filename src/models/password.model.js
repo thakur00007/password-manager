@@ -1,34 +1,26 @@
 import { mongoose, Schema } from "mongoose";
-
+import { QuestionAnswer } from "./questionAnswer.model.js";
 const passwordSchema = new Schema(
   {
     about: {
       type: String,
       trim: true,
     },
-    securityQuestion: {
+    securityQuestionAnswer: {
       type: Schema.Types.ObjectId,
-      ref: SecurityQuestion,
-      required: [true, "Sequrity question is required to store a password."],
-    },
-    securityAnswer: {
-      type: String,
-      trim: true,
-      required: [true, "Answer the Security question"],
+      ref: QuestionAnswer,
+      required: true,
     },
     storePassword: {
       type: String,
       required: true,
     },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );
-
-passwordSchema.pre("save", async function (next) {
-  if (!this.isModified("securityAnswer")) return next();
-
-  this.securityAnswer = await bcrypt.hash(this.securityAnswer, 10);
-  next();
-});
-
-export const Password = mongoose.Model("Password", passwordSchema);
+export const Password = mongoose.model("Password", passwordSchema);
