@@ -4,6 +4,7 @@ import { SecurityQuestion } from "../models/securityQuestion.model.js";
 import { ApiError } from "../util/apiError.js";
 import { apiResponse } from "../util/apiResponse.js";
 import { requestHandeller } from "../util/requestHandeller.js";
+import mongoose from "mongoose";
 
 const savePassword = requestHandeller(async (req, res) => {
   const { about, password, questionId, answer } = req.body?.data;
@@ -26,8 +27,6 @@ const savePassword = requestHandeller(async (req, res) => {
     );
   }
 
-  // TODO encrypt the password before saving it
-
   const savedPassword = await Password.create({
     about,
     storePassword: password,
@@ -42,4 +41,81 @@ const savePassword = requestHandeller(async (req, res) => {
   res.status(200).json(new apiResponse(200, "Password saved successfully!"));
 });
 
-export { savePassword };
+const fetchAllPasswords = requestHandeller(async (req, res) => {
+  const allPasswords = await Password.aggregate([
+    {
+      $match: {
+        owner: req.user._id,
+      },
+    },
+    {
+      $lookup: {
+        from: "questionanswers",
+        localField: "securityQuestionAnswer",
+        foreignField: "_id",
+        as: "securityQuestion",
+        pipeline: [
+          {
+            $lookup: {
+              from: "securityquestions",
+              localField: "question",
+              foreignField: "_id",
+              as: "securityQuestion",
+            },
+          },
+          {
+            $unwind: "$securityQuestion",
+          },
+          {
+            $project: {
+              question: "$securityQuestion.question",
+            },
+          },
+        ],
+      },
+    },
+    {
+      $unwind: "$securityQuestion",
+    },
+    {
+      $project: {
+        about: 1,
+        securityQuestion: "$securityQuestion.question",
+      },
+    },
+  ]);
+
+  res
+    .status(200)
+    .json(
+      new apiResponse(200, "Passwords fetched successfully!", allPasswords)
+    );
+});
+
+//fetch password
+const fetchPassword = requestHandeller(async (req, res) => {
+  const { passwordId, answer } = req.body.data;
+
+  if (!passwordId || !answer) {
+    throw new ApiError(400, "All fields are required!");
+  }
+
+  const foundPassword = await Password.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(passwordId),
+        owner: req.user._id,
+      },
+    },
+    //TODO match question answer
+  ]);
+  console.log(foundPassword);
+
+  res
+    .status(200)
+    .json(
+      new apiResponse(200, "Password fetched successfully!", foundPassword)
+    );
+});
+
+export { savePassword, fetchAllPasswords, fetchPassword };
