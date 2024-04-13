@@ -25,7 +25,7 @@ const registerUser = requestHandeller(async (req, res, next) => {
 
   const createdUser = await User.findById(user._id).select("-password -__v");
 
-  res.status(200).json(new apiResponse(200, "User created", [{ createdUser }]));
+  res.status(200).json(new apiResponse(200, "User created", { createdUser }));
 });
 
 const loginUser = requestHandeller(async (req, res, next) => {
@@ -35,6 +35,11 @@ const loginUser = requestHandeller(async (req, res, next) => {
   }
 
   const foundUser = await User.findOne({ email });
+
+  if (!foundUser) {
+    throw new ApiError(404, "No user found with this email!");
+  }
+
   if (!(await foundUser.isPasswordCorrect(password))) {
     throw new ApiError(401, "Wrong Password!");
   }
@@ -47,7 +52,59 @@ const loginUser = requestHandeller(async (req, res, next) => {
 
   res
     .status(200)
-    .json(new apiResponse(200, "login success", [{ loggedInUser, token }]));
+    .json(new apiResponse(200, "login success", { loggedInUser, token }));
 });
 
-export { registerUser, loginUser };
+const getUserProfile = requestHandeller(async (req, res) => {
+  const user = await User.findById(req.user._id).select("-password -__v");
+  res.status(200).json(new apiResponse(200, "User profile", { user }));
+});
+
+const changeUserPassword = requestHandeller(async (req, res) => {
+  const { oldPassword, newPassword } = req.body?.data;
+  if (!oldPassword && !newPassword) {
+    throw new ApiError(400, "Old password and new password is required");
+  }
+
+  const user = await User.findById(req.user._id);
+  if (!(await user.isPasswordCorrect(oldPassword))) {
+    throw new ApiError(401, "Old password is wrong");
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  res.status(200).json(new apiResponse(200, "Password changed successfully"));
+});
+
+const updateUserProfile = requestHandeller(async (req, res) => {
+  const { username, email } = req.body?.data;
+  if (!username && !email) {
+    throw new ApiError(400, "Username and email is required");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        username,
+        email,
+      },
+    },
+    {
+      new: true,
+    }
+  ).select("-password -__v");
+
+  res
+    .status(200)
+    .json(new apiResponse(200, "Profile updated successfully", { user }));
+});
+
+export {
+  registerUser,
+  loginUser,
+  getUserProfile,
+  changeUserPassword,
+  updateUserProfile,
+};
