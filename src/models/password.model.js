@@ -29,19 +29,18 @@ const passwordSchema = new Schema(
   { timestamps: true }
 );
 
-passwordSchema.pre("save", async function(next) {
+passwordSchema.pre("save", async function (next) {
   if (!this.isModified("storePassword")) return next();
 
   const { encryptedData, iv } = encryptData(this.storePassword);
   this.storePassword = encryptedData;
   this.storeIv = iv;
   next();
-})
+});
 
 //decrypt data
-passwordSchema.methods.decryptData = async function() {
+passwordSchema.methods.decryptData = async function () {
   return decryptData(this.storePassword, this.storeIv);
-}
-
+};
 
 export const Password = mongoose.model("Password", passwordSchema);

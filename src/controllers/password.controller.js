@@ -41,6 +41,7 @@ const savePassword = requestHandeller(async (req, res) => {
   res.status(200).json(new apiResponse(200, "Password saved successfully!"));
 });
 
+//fetch all passwords
 const fetchAllPasswords = requestHandeller(async (req, res) => {
   const allPasswords = await Password.aggregate([
     {
@@ -100,22 +101,40 @@ const fetchPassword = requestHandeller(async (req, res) => {
     throw new ApiError(400, "All fields are required!");
   }
 
-  const foundPassword = await Password.aggregate([
+  const [foundPassword] = await Password.aggregate([
     {
       $match: {
         _id: new mongoose.Types.ObjectId(passwordId),
         owner: req.user._id,
       },
     },
-    //TODO match question answer
   ]);
-  console.log(foundPassword);
+
+  if (!foundPassword) {
+    throw new ApiError(404, "Password not found!");
+  }
+
+  const securityQuestionAnswerId = foundPassword.securityQuestionAnswer;
+
+  const foundQNA = await QuestionAnswer.findById(securityQuestionAnswerId);
+
+  if (!foundQNA) {
+    throw new ApiError(404, "Question and answer not found!");
+  }
+
+  const isAnswerCorrect = await foundQNA.isAnswerCorrect(answer);
+
+  if (!isAnswerCorrect) {
+    throw new ApiError(400, "Incorrect answer!");
+  }
+
+  const newFoundPassword = await Password.findById(passwordId);
+
+  const password = await newFoundPassword.decryptData();
 
   res
     .status(200)
-    .json(
-      new apiResponse(200, "Password fetched successfully!", foundPassword)
-    );
+    .json(new apiResponse(200, "Password fetched successfully!", { password }));
 });
 
 export { savePassword, fetchAllPasswords, fetchPassword };
