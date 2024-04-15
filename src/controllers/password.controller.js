@@ -137,4 +137,38 @@ const fetchPassword = requestHandeller(async (req, res) => {
     .json(new apiResponse(200, "Password fetched successfully!", { password }));
 });
 
-export { savePassword, fetchAllPasswords, fetchPassword };
+const deletePassword = requestHandeller(async (req, res) => {
+  const { passwordId } = req.body?.data;
+
+  if (!passwordId) {
+    throw new ApiError(400, "All fields are required!");
+  }
+
+  const foundPassword = await Password.findById(passwordId).populate(
+    "securityQuestionAnswer"
+  );
+
+  if (!foundPassword) {
+    throw new ApiError(404, "Password not found!");
+  }
+
+  try {
+    await Question.findByIdAndDelete(foundPassword.securityQuestionAnswer._id);
+  } catch (error) {}
+
+  const deletedPassword = await Password.deleteOne({
+    _id: passwordId,
+    owner: req.user._id,
+  });
+
+  if (!deletedPassword) {
+    throw new ApiError(
+      404,
+      "Something went wrong while deleting the password!"
+    );
+  }
+
+  res.status(200).json(new apiResponse(200, "Password deleted successfully!"));
+});
+
+export { savePassword, fetchAllPasswords, fetchPassword, deletePassword };
