@@ -56,8 +56,8 @@ const loginUser = requestHandeller(async (req, res, next) => {
 });
 
 const getUserProfile = requestHandeller(async (req, res) => {
-  const user = await User.findById(req.user._id).select("-password -__v");
-  res.status(200).json(new apiResponse(200, "User profile", { user }));
+  const loggedInUser = await User.findById(req.user._id).select("-password -__v");
+  res.status(200).json(new apiResponse(200, "User profile", { loggedInUser }));
 });
 
 const changeUserPassword = requestHandeller(async (req, res) => {
