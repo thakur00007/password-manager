@@ -2,6 +2,12 @@
 
 This is the backend component of a password manager application. It provides the necessary APIs and functionality to securely store and manage user passwords.
 
+## Frontend Repo
+
+
+[password-manager-react](https://github.com/thakur00007/password-manager-react)
+
+
 ## Features
 
 - User authentication and authorization
