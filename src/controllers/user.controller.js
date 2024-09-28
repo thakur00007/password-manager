@@ -25,7 +25,10 @@ const registerUser = requestHandeller(async (req, res, next) => {
 
   const createdUser = await User.findById(user._id).select("-password -__v");
 
-  res.status(200).json(new apiResponse(200, "User created", { createdUser }));
+  //res.status(200).json(new apiResponse(200, "User created", { createdUser }));
+
+  loginUser(req, res, next)
+
 });
 
 const loginUser = requestHandeller(async (req, res, next) => {

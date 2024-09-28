@@ -81,6 +81,7 @@ const fetchAllPasswords = requestHandeller(async (req, res) => {
     {
       $project: {
         about: 1,
+        createdAt: 1,
         securityQuestion: "$securityQuestion.question",
       },
     },
