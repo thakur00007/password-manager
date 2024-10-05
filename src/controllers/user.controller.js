@@ -87,9 +87,13 @@ const updateUserProfile = requestHandeller(async (req, res) => {
     throw new ApiError(400, "Username and email is required");
   }
 
-  const checkUser = await User.findOne({ email });
-  if (checkUser) {
-    throw new ApiError(400, "User with this email is already exists!");
+  const currentUser = await User.findById(req.user?._id).select("email");
+
+  if (email && email !== currentUser.email) {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      throw new ApiError(400, "Email is already in use");
+    }
   }
 
   const user = await User.findByIdAndUpdate(
