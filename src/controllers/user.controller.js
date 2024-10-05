@@ -27,8 +27,7 @@ const registerUser = requestHandeller(async (req, res, next) => {
 
   //res.status(200).json(new apiResponse(200, "User created", { createdUser }));
 
-  loginUser(req, res, next)
-
+  loginUser(req, res, next);
 });
 
 const loginUser = requestHandeller(async (req, res, next) => {
@@ -59,7 +58,9 @@ const loginUser = requestHandeller(async (req, res, next) => {
 });
 
 const getUserProfile = requestHandeller(async (req, res) => {
-  const loggedInUser = await User.findById(req.user._id).select("-password -__v");
+  const loggedInUser = await User.findById(req.user._id).select(
+    "-password -__v"
+  );
   res.status(200).json(new apiResponse(200, "User profile", { loggedInUser }));
 });
 
@@ -84,6 +85,11 @@ const updateUserProfile = requestHandeller(async (req, res) => {
   const { username, email } = req.body?.data;
   if (!username && !email) {
     throw new ApiError(400, "Username and email is required");
+  }
+
+  const checkUser = await User.findOne({ email });
+  if (checkUser) {
+    throw new ApiError(400, "User with this email is already exists!");
   }
 
   const user = await User.findByIdAndUpdate(
