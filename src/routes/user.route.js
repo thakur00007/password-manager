@@ -13,7 +13,7 @@ import {
 import { verifyRecaptcha } from "../middlewares/recaptcha.middleware.js";
 
 //captcha protected routes
-userRouter.route("/register").post(verifyRecaptcha, registerUser);
+userRouter.route("/register").post(verifyRecaptcha("register"), registerUser);
 userRouter.route("/login").post(verifyRecaptcha("login"), loginUser);
 
 //lgooedin routes
