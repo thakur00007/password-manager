@@ -19,6 +19,9 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/password", passwordRouter);
 
 app.use("/api/v1/question", questionRouter);
+app.use("/health", (req, res) => {
+    res.status(200).json({status: "Service is up and running!"});
+});
 
 app.use(requestHandeller(async(req, res, next) => {
     throw new ApiError(404, "Route not found");
