@@ -15,7 +15,7 @@ import userRouter from "./routes/user.route.js";
 import passwordRouter from "./routes/password.route.js";
 import questionRouter from "./routes/question.route.js";
 import { requestHandeller } from "./util/requestHandeller.js";
-import { ApiError } from "./util/apiError.js";
+import { ApiError } from "./util/ApiError.js";
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/password", passwordRouter);

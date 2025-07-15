@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { ApiError } from "../util/apiError.js";
+import { ApiError } from "../util/ApiError.js";
 import { requestHandeller } from "../util/requestHandeller.js";
 import { User } from "../models/user.model.js";
 
@@ -22,6 +22,11 @@ export const verifyToken = requestHandeller(async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    throw new ApiError(401, err?.message || "Invalid Token");
+    if (err instanceof ApiError) {
+      throw err;
+    }
+    throw new ApiError(401, "Unauthorized request", {
+      message: err.message || "Token verification failed",
+    });
   }
 });

@@ -1,6 +1,6 @@
 import { User } from "../models/user.model.js";
-import { ApiError } from "../util/apiError.js";
-import { apiResponse } from "../util/apiResponse.js";
+import { ApiError } from "../util/ApiError.js";
+import { ApiResponse } from "../util/ApiResponse.js";
 import { requestHandeller } from "../util/requestHandeller.js";
 const registerUser = requestHandeller(async (req, res, next) => {
   const { username, email, password } = req.body.user;
@@ -25,7 +25,7 @@ const registerUser = requestHandeller(async (req, res, next) => {
 
   const createdUser = await User.findById(user._id).select("-password -__v");
 
-  //res.status(200).json(new apiResponse(200, "User created", { createdUser }));
+  //res.status(200).json(new ApiResponse(200, "User created", { createdUser }));
 
   loginUser(req, res, next);
 });
@@ -54,14 +54,14 @@ const loginUser = requestHandeller(async (req, res, next) => {
 
   res
     .status(200)
-    .json(new apiResponse(200, "login success", { loggedInUser, token }));
+    .json(new ApiResponse(200, "login success", { loggedInUser, token }));
 });
 
 const getUserProfile = requestHandeller(async (req, res) => {
   const loggedInUser = await User.findById(req.user._id).select(
     "-password -__v"
   );
-  res.status(200).json(new apiResponse(200, "User profile", { loggedInUser }));
+  res.status(200).json(new ApiResponse(200, "User profile", { loggedInUser }));
 });
 
 const changeUserPassword = requestHandeller(async (req, res) => {
@@ -78,7 +78,7 @@ const changeUserPassword = requestHandeller(async (req, res) => {
   user.password = newPassword;
   await user.save();
 
-  res.status(200).json(new apiResponse(200, "Password changed successfully"));
+  res.status(200).json(new ApiResponse(200, "Password changed successfully"));
 });
 
 const updateUserProfile = requestHandeller(async (req, res) => {
@@ -111,7 +111,7 @@ const updateUserProfile = requestHandeller(async (req, res) => {
 
   res
     .status(200)
-    .json(new apiResponse(200, "Profile updated successfully", { user }));
+    .json(new ApiResponse(200, "Profile updated successfully", { user }));
 });
 
 export {

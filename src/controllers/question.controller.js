@@ -1,5 +1,5 @@
 import { SecurityQuestion } from "../models/securityQuestion.model.js";
-import { apiResponse } from "../util/apiResponse.js";
+import { ApiResponse } from "../util/ApiResponse.js";
 import { requestHandeller } from "../util/requestHandeller.js";
 
 const saveQuestion = requestHandeller(async (req, res) => {
@@ -9,7 +9,7 @@ const saveQuestion = requestHandeller(async (req, res) => {
     question,
   });
 
-  res.status(200).json(new apiResponse(200, "Question saved successfully!"));
+  res.status(200).json(new ApiResponse(200, "Question saved successfully!"));
 });
 
 const fetchAllQuestions = requestHandeller(async (req, res) => {
@@ -19,7 +19,7 @@ const fetchAllQuestions = requestHandeller(async (req, res) => {
 
   res
     .status(200)
-    .json(new apiResponse(200, "Questions fetched", { questions }));
+    .json(new ApiResponse(200, "Questions fetched", { questions }));
 });
 
 export { saveQuestion, fetchAllQuestions };

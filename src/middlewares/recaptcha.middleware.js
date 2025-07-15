@@ -1,4 +1,4 @@
-import { ApiError } from "../util/apiError.js";
+import { ApiError } from "../util/ApiError.js";
 import { requestHandeller } from "../util/requestHandeller.js";
 
 export const verifyRecaptcha = (action = "submit") =>

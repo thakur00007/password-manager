@@ -1,8 +1,8 @@
 import { Password } from "../models/password.model.js";
 import { QuestionAnswer } from "../models/questionAnswer.model.js";
 import { SecurityQuestion } from "../models/securityQuestion.model.js";
-import { ApiError } from "../util/apiError.js";
-import { apiResponse } from "../util/apiResponse.js";
+import { ApiError } from "../util/ApiError.js";
+import { ApiResponse } from "../util/ApiResponse.js";
 import { requestHandeller } from "../util/requestHandeller.js";
 import mongoose from "mongoose";
 
@@ -38,7 +38,7 @@ const savePassword = requestHandeller(async (req, res) => {
     throw new ApiError(500, "Something went wrong while saving the password");
   }
 
-  res.status(200).json(new apiResponse(200, "Password saved successfully!"));
+  res.status(200).json(new ApiResponse(200, "Password saved successfully!"));
 });
 
 //fetch all passwords
@@ -90,7 +90,7 @@ const fetchAllPasswords = requestHandeller(async (req, res) => {
   res
     .status(200)
     .json(
-      new apiResponse(200, "Passwords fetched successfully!", allPasswords)
+      new ApiResponse(200, "Passwords fetched successfully!", allPasswords)
     );
 });
 
@@ -135,7 +135,7 @@ const fetchPassword = requestHandeller(async (req, res) => {
 
   res
     .status(200)
-    .json(new apiResponse(200, "Password fetched successfully!", { password }));
+    .json(new ApiResponse(200, "Password fetched successfully!", { password }));
 });
 
 const deletePassword = requestHandeller(async (req, res) => {
@@ -171,7 +171,7 @@ const deletePassword = requestHandeller(async (req, res) => {
     );
   }
 
-  res.status(200).json(new apiResponse(200, "Password deleted successfully!"));
+  res.status(200).json(new ApiResponse(200, "Password deleted successfully!"));
 });
 
 export { savePassword, fetchAllPasswords, fetchPassword, deletePassword };
