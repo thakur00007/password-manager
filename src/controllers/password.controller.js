@@ -154,7 +154,9 @@ const deletePassword = requestHandeller(async (req, res) => {
   }
 
   try {
-    await QuestionAnswer.findByIdAndDelete(foundPassword.securityQuestionAnswer._id);
+    await QuestionAnswer.findByIdAndDelete(
+      foundPassword.securityQuestionAnswer._id
+    );
   } catch (error) {}
 
   const deletedPassword = await Password.deleteOne({

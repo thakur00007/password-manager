@@ -3,7 +3,7 @@ import {
   savePassword,
   fetchAllPasswords,
   fetchPassword,
-  deletePassword
+  deletePassword,
 } from "../controllers/password.controller.js";
 import { verifyToken } from "../middlewares/auth.middleware.js";
 

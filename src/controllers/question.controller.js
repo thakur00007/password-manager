@@ -13,7 +13,9 @@ const saveQuestion = requestHandeller(async (req, res) => {
 });
 
 const fetchAllQuestions = requestHandeller(async (req, res) => {
-  const questions = await SecurityQuestion.find().select("-__v -createdAt -updatedAt");
+  const questions = await SecurityQuestion.find().select(
+    "-__v -createdAt -updatedAt"
+  );
 
   res
     .status(200)
